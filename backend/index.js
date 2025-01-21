@@ -14,6 +14,10 @@ app.use(cors());
 
 app.use("/api/tasks", apiRoutes.tasks);
 
+app.get("/",(req, res) => {
+    res.send("Hello World");
+});
+
 app.listen(PORT, async (req, res) => {
     console.log("Server is listening at port - ", PORT)
     try{
