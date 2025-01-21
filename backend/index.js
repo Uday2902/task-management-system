@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use("/api/users", apiRoutes.users);
 app.use("/api/tasks", apiRoutes.tasks);
 
 app.get("/",(req, res) => {

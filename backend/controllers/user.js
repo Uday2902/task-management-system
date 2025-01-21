@@ -4,7 +4,7 @@ const Models = require("../models/index")
 
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
-    const existingUser = Models.User.findOne({email});
+    const existingUser = await Models.User.findOne({email});
     if(existingUser){
         res.status(StatusCodes.BAD_REQUEST).json({message: "User already exists with this credentials!"});
     }
@@ -33,13 +33,10 @@ const loginUser = async (req, res) => {
         if(!user){
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Invalid password" });
         }
-        const isPasswordCorrect = await Models.User.isPasswordCorrect(password);
+        const isPasswordCorrect = await user.comparePassword(password);
         if(isPasswordCorrect){
-            user = await Models.User.findOne({ password });
-            if(user.password){
-                delete user.password;
-            }
-            return res.status(StatusCodes.OK).json({ message: "User found with given credentials", user });
+            const token = user.createJWT(); 
+            return res.status(StatusCodes.OK).json({ message: "User found with given credentials", user, token });
         }
         res.status(StatusCodes.NOT_FOUND).json({ message: "Incorrect password!" });
     }
