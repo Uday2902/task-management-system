@@ -13,7 +13,8 @@ const registerUser = async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Not able to create new user account!" });
     }
     delete newUser.password;
-    res.status(StatusCodes.CREATED).json({ message: "New user created successfully!", data: newUser });
+    const token = newUser.createJWT();
+    res.status(StatusCodes.CREATED).json({ message: "New user created successfully!", data: newUser, token });
 };
 
 const loginUser = async (req, res) => {
