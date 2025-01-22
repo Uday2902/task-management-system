@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 
 const TaskSchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        required: true
-    },
     title: {
         type: String,
         required: true
@@ -17,7 +13,10 @@ const TaskSchema = new mongoose.Schema({
         enum: ["Pending", "In Progress", "Completed"],
         default: "Pending"
     },
-    
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 },{ 
     timestamps: true
 });

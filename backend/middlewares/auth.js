@@ -3,7 +3,9 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    if(!token) next();
+    if(!token){
+        return res.status(StatusCodes.NON_AUTHORITATIVE_INFORMATION).json({ message: "Authorization token is required to access this route!" })
+    };
     if(token){
         try{
             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
