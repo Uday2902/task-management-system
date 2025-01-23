@@ -3,14 +3,12 @@ const Models = require("../models/index");
 
 const createTask = async (req, res) => {
     try {
-        const { mongoID,  } = req.body;
-        console.log(mongoID)
+        const { mongoID } = req.body;
         const createdTask = await Models.Task.create({ ...req.body, user: mongoID });
         const user = await Models.User.updateOne(
             { _id: mongoID },
             { $push: { pendingTasks: createdTask._id } }
         );
-        console.log("Updated user -> ", user);
         if (!createdTask) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Failed to create task" });
         }
@@ -28,7 +26,7 @@ const deleteTask = async (req, res) => {
         if (!deletedTask) {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Task not found!" });
         }
-        res.status(StatusCodes.OK).json({ message: "Task deleted successfuly!", data: deletedTask });
+        res.status(200).json({ message: "Task deleted successfuly!" });
     } catch (err) {
         console.error("Error deleting task : ", err);
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error!" });
@@ -38,14 +36,11 @@ const deleteTask = async (req, res) => {
 const getTasks = async (req, res) => {
     try {
         const { mongoID } = req.body;
-        console.log("MongoID -> ", mongoID);
         const user = await Models.User.findOne({ _id: mongoID }).populate([
             { path: "pendingTasks" },
             { path: "inProgressTasks" },
             { path: "completedTasks" }
         ]);
-        
-        // console.log("User with populated tasks ->", user);
         if (!user) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Not able to find any user!" })
         }
@@ -65,7 +60,7 @@ const getTaskById = async (req, res) => {
         const { id } = req.params;
         const task = await Models.Task.findOne({ _id: id });
         if (!task) {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Failed to find task by ID" });
+            return res.status(StatusCodes.NOT_FOUND).json({ message: "Failed to find task by ID" });
         }
         res.status(StatusCodes.OK).json({ message: "Task found with given id", data: task });
     } catch (err) {
@@ -99,8 +94,6 @@ const updateTask = async (req, res) => {
               },
               { new: true }
             );
-      
-            console.log("Updated User -> ", updatedUser);
           }
         }
       

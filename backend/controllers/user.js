@@ -12,7 +12,8 @@ const registerUser = async (req, res) => {
     if(!newUser){
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Not able to create new user account!" });
     }
-    delete newUser.password;
+    const userObject = newUser.toObject();
+    delete userObject.password;
     const token = newUser.createJWT();
     res.status(StatusCodes.CREATED).json({ message: "New user created successfully!", data: newUser, token });
 };
@@ -34,8 +35,11 @@ const loginUser = async (req, res) => {
             return res.status(StatusCodes.NOT_FOUND).json({ message: "Invalid password" });
         }
         const isPasswordCorrect = await user.comparePassword(password);
+        
         if(isPasswordCorrect){
             const token = user.createJWT(); 
+            user = user.toObject();
+            delete user.password;
             return res.status(StatusCodes.OK).json({ message: "User found with given credentials", user, token });
         }
         res.status(StatusCodes.NOT_FOUND).json({ message: "Incorrect password!" });

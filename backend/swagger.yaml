@@ -1,0 +1,296 @@
+openapi: 3.0.0
+info:
+  title: Task Management System API
+  description: API documentation for the Task Management System
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: Tasks
+    description: APIs related to task management
+  - name: Users
+    description: APIs related to user management
+paths:
+  /tasks:
+    get:
+      tags:
+        - Tasks
+      summary: Get all tasks
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The task ID
+                    title:
+                      type: string
+                      description: The task title
+                    description:
+                      type: string
+                      description: The task description
+                    status:
+                      type: string
+                      description: Task's current status
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: MongoID of Owner of the task
+
+    post:
+      tags:
+        - Tasks
+      summary: Create a new task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Task title
+                description:
+                  type: string
+                  description: Task description
+                status:
+                  type: string
+                  description: Status of task
+            required:
+              - title
+              - description
+                  
+      responses:
+        200:
+          description: Created task
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The task ID
+                    title:
+                      type: string
+                      description: The task title
+                    description:
+                      type: string
+                      description: The task description
+                    status:
+                      type: string
+                      description: Task's current status
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: MongoID of Owner of the task
+        201:
+          description: Task created successfully
+        500:
+          description: Internal server error
+
+  /tasks/{id}:
+    get:
+      tags:
+        - Tasks
+      summary: Get a task by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The task ID
+      responses:
+        200:
+          description: Requested task
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The task ID
+                    title:
+                      type: string
+                      description: The task title
+                    description:
+                      type: string
+                      description: The task description
+                    status:
+                      type: string
+                      description: Task's current status
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: MongoID of Owner of the task
+        404:
+          description: Task not found
+
+    put:
+      tags:
+        - Tasks
+      summary: Update a task by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The task ID
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Updated title
+                description:
+                  type: string
+                  description: Updated description
+                status:
+                  type: string
+                  description: Updated status
+      responses:
+        200:
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The task ID
+                    title:
+                      type: string
+                      description: The task title
+                    description:
+                      type: string
+                      description: The task description
+                    status:
+                      type: string
+                      description: Task's current status
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: MongoID of Owner of the task
+        404:
+          description: Task not found
+        500:
+          description: Internal server error
+
+    delete:
+      tags:
+        - Tasks
+      summary: Delete a task by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The task ID
+      responses:
+        200:
+          description: Message deletion
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      description: Message deletion status
+        404:
+          description: Task not found
+        500:
+          description: Internal server error
+
+
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        404: 
+          description: User not found
+        200:
+          description: Login successful
+        500:
+          description: Internal Server Error
+        
+
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+      responses:
+        201:
+          description: User registered successfully
+        500:
+          description: Internal Server Error
+        400:
+          description: Bad request
+        
