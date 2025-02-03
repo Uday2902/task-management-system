@@ -6,13 +6,13 @@ const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     const existingUser = await Models.User.findOne({email});
     if(existingUser){
-        res.status(StatusCodes.BAD_REQUEST).json({message: "User already exists with this credentials!"});
+        return res.status(StatusCodes.BAD_REQUEST).json({message: "User already exists with this credentials!"});
     }
     const newUser = await Models.User.create({name, email, password});
     if(!newUser){
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Not able to create new user account!" });
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Not able to create new user account!" });
     }
-    const userObject = newUser.toObject();
+    const userObject = Object(newUser);
     delete userObject.password;
     const token = newUser.createJWT();
     res.status(StatusCodes.CREATED).json({ message: "New user created successfully!", data: newUser, token });

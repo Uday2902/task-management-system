@@ -7,7 +7,7 @@ const YAML = require("yamljs");
 const PORT = process.env.PORT;
 const app = express();
 
-const swaggerDocument = YAML.load("./swagger.yaml"); 
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -25,12 +25,17 @@ app.use("/api/tasks", apiRoutes.tasks);
 //     res.send("Hello World");
 // });
 
-app.listen(PORT, async (req, res) => {
-    console.log("Server is listening at port - ", PORT)
-    try {
-        await connectDB(process.env.MONGODB_URI);
-        console.log("Mongodb connected successfully!");
-    } catch (err) {
-        console.error(err);
-    }
-});
+if (process.env.NODE_ENV !== "test") {
+    (async () => {
+        try {
+            await connectDB(process.env.MONGODB_URI);
+            console.log("Mongodb connected successfully!");
+        } catch (err) {
+            console.error(err);
+        }
+    })();
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};
+
+
+module.exports = app;
